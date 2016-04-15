@@ -2,12 +2,16 @@
 
 use strict;
 use warnings;
+use ParallelSSH;
 use InputInitialization;
 use Data::Dumper qw(Dumper);
 
-my $object = new InputInitialization('conf.ini');
-my ($error, $data) = $object->validateAndExtractData();
-print $error if ($error);
-# Get configuration file which is set using constructor.
-# my $conf_file = $object->getConfFile();
-print Dumper $data;
+my $objectInputInialization = new InputInitialization('conf.ini');
+my $data = $objectInputInialization->validateAndExtractData();
+my @hosts = keys %$data;
+
+my $objectParallelSSH = new ParallelSSH(\@hosts);
+my $hosts = $objectParallelSSH->getHosts();
+print Dumper $hosts;
+# uname -a
+# my @listOS = $object->

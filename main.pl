@@ -8,10 +8,9 @@ use Data::Dumper qw(Dumper);
 
 my $objectInputInialization = new InputInitialization('conf.ini');
 my $data = $objectInputInialization->validateAndExtractData();
-my @hosts = keys %$data;
 
-my $objectParallelSSH = new ParallelSSH(\@hosts);
-my $hosts = $objectParallelSSH->getHosts();
+my $objectParallelSSH = new ParallelSSH( $data );
+my $hosts = $objectParallelSSH->createSSHConnections();
 print Dumper $hosts;
 # uname -a
 # my @listOS = $object->

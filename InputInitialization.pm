@@ -1,6 +1,8 @@
 package InputInitialization;
 
 use Carp;
+use strict;
+use warnings;
 use Fcntl qw(:flock);
 use Config::IniFiles;
 

@@ -3,6 +3,7 @@ package Files;
 use Carp;
 use strict;
 use warnings;
+use Data::Dumper;
 
 sub new {
     my ($class, $dirs) = @_;
@@ -14,9 +15,22 @@ sub new {
 }
 
 sub createDirIfDoesNotExist {
-    my ( $self ) = @_;
-    unless(-e $self->{-dirs} or mkdir $self->{_dirs}) {
-        croak "Unable to create $self->{_dirs}\n";
+    my ( $self, $hosts ) = @_;
+    foreach my $host (keys %$hosts) {
+	if ($hosts->{$host}{'dir'}) {
+	    unless(-e "$hosts->{$host}{'dir'}/$hosts->{$host}{'label'}" or
+		   mkdir("$hosts->{$host}{'dir'}/$hosts->{$host}{'label'}", 0700)) {
+		croak "Unable to create $hosts->{$host}{'dir'}/$hosts->{$host}{'label'}\n";
+	    }
+	    chdir(".")
+	}
+	else {
+	    unless(-e "./$hosts->{$host}{'label'}" or
+		   mkdir("./$hosts->{$host}{'label'}", 0700)) {
+		croak "Unable to create ./".$hosts->{$host}{'label'}."\n";
+	    }
+	    chdir(".")
+	}
     }
     return;
 }

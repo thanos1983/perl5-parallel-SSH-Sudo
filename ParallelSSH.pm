@@ -41,19 +41,11 @@ sub createSSHConnections {
     my @std_fh = ();
     $self->{_pssh} = Net::OpenSSH::Parallel->new( %opts );
 
-    my @dirs = ();
-    foreach my $host (@hosts) {
-	if ($self->{_hosts}->{$host}{'dir'}) {
-	    push (@dirs, $self->{_hosts}->{$host}{'dir'});
-	}
-	else {
-	    push (@dirs, './');
-	}
-    }
-    print Dumper \@dirs;
-    exit 0;
-
     my $fileObject = new Files();
+    $fileObject->createDirIfDoesNotExist($self->{_hosts});
+    my $output = `pwd`;
+    print $output . "\n";
+    exit 0;
 
     foreach my $host (@hosts) {
 	open(my $stdout_fh, '>>', $self->{_hosts}->{$host}{'label'} . ".log")

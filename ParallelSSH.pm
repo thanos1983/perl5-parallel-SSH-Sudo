@@ -31,13 +31,13 @@ sub createSSHConnections {
 
     my @hosts = keys %{$self->{_hosts}};
 
+    my $error_policy = 'OSSH_ON_ERROR_ABORT';
     my $maximum_workers = @hosts;
     my $maximum_connections = 2 * $maximum_workers;
     my $maximum_reconnections = 3;
 
     my %opts = ( workers       => $maximum_workers,
-		 connections   => $maximum_connections ,
-		 reconnections => $maximum_reconnections );
+		 connections   => $maximum_connections );
 
     my @std_fh = ();
     $self->{_pssh} = Net::OpenSSH::Parallel->new( %opts );
@@ -67,11 +67,17 @@ sub createSSHConnections {
 	    user     => $self->{_hosts}->{$host}{'user'},
 	    port     => $self->{_hosts}->{$host}{'port'},
 	    password => $self->{_hosts}->{$host}{'password'},
+	    on_error => $error_policy,
+	    reconnections     => $maximum_reconnections,
 	    default_stdout_fh => $stdout_fh,
-	    default_stderr_fh => $stderr_fh,);
+	    default_stderr_fh => $stderr_fh
+	    );
 
 	push(@std_fh, $stdout_fh, $stderr_fh);
     }
+
+    print Dumper $self->{_pssh};
+    exit 0;
     _closeFH(@std_fh);
     return \@std_fh;
     exit 0;

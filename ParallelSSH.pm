@@ -5,6 +5,7 @@ use warnings;
 
 use Carp;
 use Files;
+use FindBin '$Bin';
 use Net::OpenSSH::Parallel;
 use Data::Dumper qw(Dumper);
 
@@ -43,16 +44,22 @@ sub createSSHConnections {
 
     my $fileObject = new Files();
     $fileObject->createDirIfDoesNotExist($self->{_hosts});
-    my $output = `pwd`;
-    print $output . "\n";
-    exit 0;
-
     foreach my $host (@hosts) {
-	open(my $stdout_fh, '>>', $self->{_hosts}->{$host}{'label'} . ".log")
-	    or croak "Could not open file '".$self->{_hosts}->{$host}{'label'}.".log' $!\n";
+;
+	if ($self->{_hosts}->{$host}{'dir'}) {
+	    chdir("$self->{_hosts}->{$host}{'dir'}/$self->{_hosts}->{$host}{'label'}");
+	}
+	else {
+	    chdir("./$self->{_hosts}->{$host}{'label'}");
+	}
 
-	open(my $stderr_fh, '>>', $self->{_hosts}->{$host}{'label'} . ".err")
-	    or croak "Could not open file '".$self->{_hosts}->{$host}{'label'}.".err' $!\n";
+	open(my $stdout_fh, '>', $self->{_hosts}->{$host}{'label'}.".log")
+	    or croak "Could not open file '".$self->{_hosts}->{$host}{'label'}.".log' $!";
+
+	open(my $stderr_fh, '>>', $self->{_hosts}->{$host}{'label'}.".err")
+	    or croak "Could not open file '".$self->{_hosts}->{$host}{'label'}.".err' $!";
+
+	chdir($Bin);
 
 	$self->{_pssh}->add_host(
 	    $self->{_hosts}->{$host}{'label'},
@@ -65,7 +72,9 @@ sub createSSHConnections {
 
 	push(@std_fh, $stdout_fh, $stderr_fh);
     }
-    return \@hosts;
+    _closeFH(@std_fh);
+    return \@std_fh;
+    exit 0;
 }
 
 sub retrieveOS {

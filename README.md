@@ -12,3 +12,4 @@ Sample of confi.ini file:
 user=testUser
 port=22 #default
 password=testPassword
+label=HostnameDescription

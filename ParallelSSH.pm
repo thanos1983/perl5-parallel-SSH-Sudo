@@ -36,8 +36,10 @@ sub createSSHConnections {
     my $maximum_connections = 2 * $maximum_workers;
     my $maximum_reconnections = 3;
 
-    my %opts = ( workers       => $maximum_workers,
-		 connections   => $maximum_connections );
+    my %opts = ( on_error      => $error_policy,
+		 workers       => $maximum_workers,
+		 connections   => $maximum_connections,
+		 reconnections => $maximum_reconnections );
 
     my @std_fh = ();
     $self->{_pssh} = Net::OpenSSH::Parallel->new( %opts );
@@ -45,7 +47,7 @@ sub createSSHConnections {
     my $fileObject = new Files();
     $fileObject->createDirIfDoesNotExist($self->{_hosts});
     foreach my $host (@hosts) {
-;
+	;
 	if ($self->{_hosts}->{$host}{'dir'}) {
 	    chdir("$self->{_hosts}->{$host}{'dir'}/$self->{_hosts}->{$host}{'label'}");
 	}

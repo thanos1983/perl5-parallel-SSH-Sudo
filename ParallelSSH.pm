@@ -17,8 +17,9 @@ use constant {
 sub new {
     my ($class, $hosts) = @_;
     my $self = {
-	_pssh  => undef,
-        _hosts => $hosts,
+	_pssh    => undef,
+	_std_fhs => undef,
+	_hosts   => $hosts,
     };
     bless $self, $class;
     return $self;
@@ -75,14 +76,11 @@ sub createSSHConnections {
 	    default_stderr_fh => $stderr_fh
 	    );
 
-	push(@std_fh, $stdout_fh, $stderr_fh);
+	push(@{$self->{_std_fhs}}, $stdout_fh, $stderr_fh);
     }
 
-    print Dumper $self->{_pssh};
-    exit 0;
-    _closeFH(@std_fh);
-    return \@std_fh;
-    exit 0;
+    _closeFH(@{$self->{_std_fhs}});
+    return $self->{_hosts};
 }
 
 sub retrieveOS {
